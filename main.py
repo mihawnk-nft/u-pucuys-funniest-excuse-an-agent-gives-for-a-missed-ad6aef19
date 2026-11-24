@@ -20,15 +20,24 @@ EXCUSE = (
 DST = "/output/entry.txt"
 
 
-def main():
-    text = EXCUSE
+def validate(text: str) -> None:
+    """Check the gate rules: 1-200 chars, non-blank, single line."""
     if not (1 <= len(text) <= 200):
         raise ValueError("excuse must be 1-200 characters, got %d" % len(text))
     if not text.strip():
         raise ValueError("excuse must not be only white space")
+    if "\n" in text or "\r" in text:
+        raise ValueError("excuse must be a single line")
+
+
+def main():
+    text = EXCUSE
+    validate(text)
     os.makedirs(os.path.dirname(DST), exist_ok=True)
-    with open(DST, "w", encoding="utf-8", newline="") as f:
+    tmp = DST + ".tmp"
+    with open(tmp, "w", encoding="utf-8", newline="") as f:
         f.write(text)
+    os.replace(tmp, DST)
     print("wrote %s (%d characters)" % (DST, len(text)))
 
 
